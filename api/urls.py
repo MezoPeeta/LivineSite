@@ -8,5 +8,6 @@ urlpatterns = [
     path('login/', views.LoginAPI.as_view(), name='login'),
     path('logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
+    path('token/', views.TokenAPI.as_view(), name='TokenFCM'),
 
 ]

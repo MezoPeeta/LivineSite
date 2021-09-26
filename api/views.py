@@ -1,5 +1,6 @@
 from api.models import RecipeModel
 from api.serializers import RecipeSerializer ,UserSerializer, RegisterSerializer
+from base.tokenSerializer import token_serializer
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -44,4 +45,13 @@ class LoginAPI(KnoxLoginView):
         user = serializer.validated_data['user']
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
+
+class TokenAPI(generics.GenericAPIView):
+    serializer_class = token_serializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.save()
+        return super(TokenAPI, self).post(request, format=None)
 
