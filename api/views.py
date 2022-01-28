@@ -1,6 +1,5 @@
-from api.models import RecipeModel
-from api.serializers import RecipeSerializer ,UserSerializer, RegisterSerializer
-from base.tokenSerializer import token_serializer
+from api.models import RecipeModel, BreakfastModel
+from api.serializers import *
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -11,6 +10,10 @@ from django.contrib.auth import login
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
+from django.dispatch import receiver
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail  
 
 
 def index(request):
@@ -22,6 +25,46 @@ def home(request):
         recipe = RecipeModel.objects.all()
         serializer = RecipeSerializer(recipe, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def recipeDetail(request,pk):
+    if request.method == "GET":
+        recipe = RecipeModel.objects.get(pk=pk)
+        serializer = RecipeSerializer(recipe)
+        return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def breakfast(request):
+    if request.method == 'GET':
+        recipe = BreakfastModel.objects.all()
+        serializer = BreakfastSerializer(recipe, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def lunch(request):
+    if request.method == 'GET':
+        recipe = LunchModel.objects.all()
+        serializer = LunchSerializer(recipe, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def dinner(request):
+    if request.method == 'GET':
+        recipe = DinnerModel.objects.all()
+        serializer = DinnerSerializer(recipe, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def snacks(request):
+    if request.method == 'GET':
+        recipe = SnacksModel.objects.all()
+        serializer = SnacksSerializer(recipe, many=True)
+        return Response(serializer.data)
+
+
+
 
 # Register User
 class RegisterAPI(generics.GenericAPIView):
@@ -46,12 +89,19 @@ class LoginAPI(KnoxLoginView):
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
 
-class TokenAPI(generics.GenericAPIView):
-    serializer_class = token_serializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        token = serializer.save()
-        return super(TokenAPI, self).post(request, format=None)
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
+    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "pristineguava@gmail.com",
+        # to:
+        [reset_password_token.user.email]
+    )

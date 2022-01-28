@@ -113,6 +113,14 @@ django = "*"
 djangorestframework = "*"
 
 [[package]]
+name = "django-rest-passwordreset"
+version = "1.2.1"
+description = "An extension of django rest framework, providing a configurable password reset strategy"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "djangorestframework"
 version = "3.12.4"
 description = "Web APIs for Django, made easy."
@@ -484,7 +492,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "572798be5510deae4a9b6f69ef9a0e0c8fec993003992c4b66b1ee74130f7207"
+content-hash = "a37d8d8de403dcbf7d17ff43c56761e7420c1e25a85c4cb7c8642e777392dc01"
 
 [metadata.files]
 asgiref = [
@@ -581,6 +589,10 @@ django-rest-knox = [
     {file = "django-rest-knox-4.1.0.tar.gz", hash = "sha256:4a57b05b04fcccc41fcc969ad0e3f180467d7045b45003b58f5a437d6d3370d4"},
     {file = "django_rest_knox-4.1.0-py2-none-any.whl", hash = "sha256:f7dac2f7a6ece7c1bd331bdb01dc3d16e0b340f3d1001a7285cc13b171d539a3"},
     {file = "django_rest_knox-4.1.0-py3-none-any.whl", hash = "sha256:e4ac93e6d7dd63af5b58ff19d7f197788a874e932464d77db5630f185365eac0"},
+]
+django-rest-passwordreset = [
+    {file = "django-rest-passwordreset-1.2.1.tar.gz", hash = "sha256:9762f337983b33f66b9ec95d4f19b3da8daba2b7d22ac005ba114ddda98aae38"},
+    {file = "django_rest_passwordreset-1.2.1-py3-none-any.whl", hash = "sha256:6be5d34b334cae4e381336fa32987e48276eec976aa454bb0ef428438eba3d44"},
 ]
 djangorestframework = [
     {file = "djangorestframework-3.12.4-py3-none-any.whl", hash = "sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf"},

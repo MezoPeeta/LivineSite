@@ -1,11 +1,33 @@
-from api.models import RecipeModel
+from api.models import *
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta: 
         model = RecipeModel
-        fields = ['id','name','rating']
+        fields = ['id','name', 'imageURL','rating','video','ingridents']
+
+
+class BreakfastSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = BreakfastModel
+        fields = ['id','name', 'imageURL']
+
+class LunchSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = LunchModel
+        fields = ['id','name', 'imageURL']
+
+class DinnerSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = DinnerModel
+        fields = ['id','name', 'imageURL']
+
+class SnacksSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = SnacksModel
+        fields = ['id','name', 'imageURL']
+
 
 
 # User Serializer
