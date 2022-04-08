@@ -1,3 +1,4 @@
+import email
 from api.models import RecipeModel, BreakfastModel
 from api.serializers import *
 from django.shortcuts import render
@@ -14,6 +15,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
+from rest_framework import status
 
 
 def index(request):
@@ -73,11 +75,24 @@ class RegisterAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        "token": AuthToken.objects.create(user)[1]
-        })
+        email = serializer.validated_data['email']
+        print("This Email " + serializer.validated_data['email'])
+
+        emailExist = User.objects.filter(email = email).exists()
+
+        if emailExist:
+            return Response(
+                {
+                'email' : "This email already exists"
+            },
+            status = status.HTTP_400_BAD_REQUEST
+            )
+        else:
+            user = serializer.save()
+            return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)[1]
+            })
 
 class LoginAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
@@ -86,7 +101,11 @@ class LoginAPI(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        login(request, user)
+        try:
+            login(request, user)
+        except:
+            print("ERror")
+        
         return super(LoginAPI, self).post(request, format=None)
 
 
