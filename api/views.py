@@ -26,15 +26,41 @@ def home(request):
     if request.method == 'GET':
         recipe = RecipeModel.objects.all()
         serializer = RecipeSerializer(recipe, many=True)
+        
         return Response(serializer.data)
+
+
 
 @api_view(['GET'])
 def recipeDetail(request,pk):
     if request.method == "GET":
         recipe = RecipeModel.objects.get(pk=pk)
         serializer = RecipeSerializer(recipe)
+        
+        
+        
+            #remove '/r' from ingridents and split it
+        
+        # for i in ingridents:
+        #     print(i)
         return Response(serializer.data)
 
+
+
+
+@api_view(['GET'])
+def recipeTypeDetail(request,type):
+    if request.method == "GET":
+        recipe = RecipeModel.objects.filter(type=type,many=True)
+        serializer = RecipeSerializer(recipe)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def recipe_all_types(request):
+    if request.method == "GET":
+        recipe = RecipesTypes.objects.all()
+        serializer = RecipeTypesSerializer(recipe,many=True)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -101,12 +127,16 @@ class LoginAPI(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        print(user.id)
         try:
             login(request, user)
         except:
-            print("ERror")
-        
-        return super(LoginAPI, self).post(request, format=None)
+            print("Error")
+
+        temp_list=super(LoginAPI, self).post(request, format=None)
+        temp_list.data['user_id'] = user.id 
+        return Response({"data":temp_list.data})
+
 
 
 @receiver(reset_password_token_created)
@@ -124,3 +154,11 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # to:
         [reset_password_token.user.email]
     )
+
+
+@api_view(['GET'])
+def get_users(request,pk):
+    if request.method == "GET":
+        users = User.objects.get(pk=pk)
+        serializer = UserSerializer(users)
+        return Response(serializer.data)

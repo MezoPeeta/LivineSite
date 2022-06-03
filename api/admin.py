@@ -2,6 +2,9 @@ from api.models import *
 from django.contrib import admin
 
 admin.site.register(RecipeModel)
+admin.site.register(Difficulty)
+
+admin.site.register(RecipesTypes)
 
 admin.site.register(BreakfastModel)
 

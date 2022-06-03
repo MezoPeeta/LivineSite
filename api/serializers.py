@@ -3,10 +3,47 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 class RecipeSerializer(serializers.ModelSerializer):
+    ingridents = serializers.SerializerMethodField(source="ingridents")
+    ingridents_in_arabic = serializers.SerializerMethodField(source="ingridents_in_arabic")
+    
+    directions = serializers.SerializerMethodField(source="directions")
+
+    directions_in_arabic = serializers.SerializerMethodField(source="directions_in_arabic")
+
+    difficulty = serializers.CharField(source='difficulty.name')
+
+
+    def get_ingridents(self, instance):
+        ig = instance.ingridents.splitlines()
+        x = [x for x in ig if x]
+        return x
+
+    def get_ingridents_in_arabic(self, instance):
+        ig_a = instance.ingridents_in_arabic.splitlines()
+        x = [x for x in ig_a if x]
+        return x
+    
+    def get_directions(self, instance):
+        dr = instance.directions.splitlines()
+        x = [x for x in dr if x]
+        return x
+
+    def get_directions_in_arabic(self, instance):
+        dr_a = instance.directions_in_arabic.splitlines()
+        x = [x for x in dr_a if x]
+        return x
+
+
+    
     class Meta: 
         model = RecipeModel
-        fields = ['id','name', 'imageURL','rating','video','ingridents']
+        fields = '__all__' 
 
+
+class RecipeTypesSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = RecipesTypes
+        fields = '__all__' 
 
 class BreakfastSerializer(serializers.ModelSerializer):
     class Meta: 
