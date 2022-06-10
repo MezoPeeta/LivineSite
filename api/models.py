@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.db import models
 
 class Difficulty(models.Model):
@@ -34,7 +36,7 @@ class RecipeModel(models.Model):
     directions_in_arabic = models.TextField(default="")
 
 
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=timezone.now())
     
     def __str__(self):
         return self.name

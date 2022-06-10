@@ -51,8 +51,8 @@ def recipeDetail(request,pk):
 @api_view(['GET'])
 def recipeTypeDetail(request,type):
     if request.method == "GET":
-        recipe = RecipeModel.objects.filter(type=type,many=True)
-        serializer = RecipeSerializer(recipe)
+        recipe = RecipeModel.objects.filter(type=type)
+        serializer = RecipeSerializer(recipe,many=True)
         return Response(serializer.data)
 
 @api_view(['GET'])
