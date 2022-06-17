@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n&v0w=jdnl+_b0dz-i_n%54065_j6k3au1^-hrq0li68%@-5xk'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -80,10 +82,26 @@ WSGI_APPLICATION = 'livineBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+#Azure Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'livine',
+        'USER': 'livine@livine-db',
+        'PASSWORD': config("LIVINE_DB_PASSWORD"),
+        'HOST': 'livine-db.postgres.database.azure.com',
+        'PORT': '5432',
+        'OPTIONS':{
+            'sslmode': 'require'
+        }
+
     }
 }
 
@@ -129,6 +147,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+
+CSRF_TRUSTED_ORIGINS = ['https://*.livine.azurewebsites.net/']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -163,3 +183,5 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'pristineguava@gmail.com'
 
 EMAIL_HOST_PASSWORD = 'mnprgqxzagekhwjf'
+
+

@@ -36,13 +36,7 @@ def recipeDetail(request,pk):
     if request.method == "GET":
         recipe = RecipeModel.objects.get(pk=pk)
         serializer = RecipeSerializer(recipe)
-        
-        
-        
-            #remove '/r' from ingridents and split it
-        
-        # for i in ingridents:
-        #     print(i)
+    
         return Response(serializer.data)
 
 
@@ -161,4 +155,19 @@ def get_users(request,pk):
     if request.method == "GET":
         users = User.objects.get(pk=pk)
         serializer = UserSerializer(users)
+        return Response(serializer.data)
+
+
+@api_view(['POST'])
+def user_update(request,pk):
+    if request.method == "POST":
+        user = User.objects.get(pk=pk)
+        
+        
+        serializer = UserSerializer(instance = user , data = request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            
+     
         return Response(serializer.data)

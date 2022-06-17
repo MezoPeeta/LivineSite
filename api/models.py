@@ -1,15 +1,14 @@
-from django.utils import timezone
 
 from django.db import models
 
-class Difficulty(models.Model):
-    diff = (("Easy","Easy"),("Medium","Medium"),("Hard","Hard"))
-    name = models.CharField(choices=diff, max_length=10)
+from PIL import Image
+from django.contrib.auth.models import User
 
-    def __str__(self):
-        return self.name
+
 
 class RecipeModel(models.Model):
+    diff_list = (("Easy","Easy"),("Medium","Medium"),("Hard","Hard"))
+
     name = models.CharField(max_length=50)
     name_in_arabic= models.CharField(max_length=50,default='')
 
@@ -25,7 +24,7 @@ class RecipeModel(models.Model):
 
     ingridents = models.TextField(default="")
 
-    difficulty = models.ForeignKey(Difficulty, on_delete=models.CASCADE, null=True)
+    diff = models.CharField(max_length=10, choices=diff_list, default="Easy")
 
     ingridents_in_arabic = models.TextField(default="")
     
@@ -36,7 +35,7 @@ class RecipeModel(models.Model):
     directions_in_arabic = models.TextField(default="")
 
 
-    created_at = models.DateTimeField(default=timezone.now())
+    created_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -85,5 +84,18 @@ class SnacksModel(models.Model):
         return self.name
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,null=True)
+    image = models.ImageField(upload_to='user',default='default.png')
 
- 
+    def save(self, *args, **kwargs):
+        super(UserProfile, self).save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+
+        if img.height > 300 or img.width > 300 :
+            output_size = (300,300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
+
+

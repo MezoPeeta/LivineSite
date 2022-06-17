@@ -1,6 +1,11 @@
 from api.models import *
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+import base64
+import six
+import uuid
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     ingridents = serializers.SerializerMethodField(source="ingridents")
@@ -45,25 +50,52 @@ class RecipeTypesSerializer(serializers.ModelSerializer):
         model = RecipesTypes
         fields = '__all__' 
 
-class BreakfastSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = BreakfastModel
-        fields = ['id','name', 'imageURL']
+class Base64ImageField(serializers.ImageField):
+    """
+    A Django REST framework field for handling image-uploads through raw post data.
+    It uses base64 for encoding and decoding the contents of the file.
 
-class LunchSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = LunchModel
-        fields = ['id','name', 'imageURL']
+    Heavily based on
+    https://github.com/tomchristie/django-rest-framework/pull/1268
 
-class DinnerSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = DinnerModel
-        fields = ['id','name', 'imageURL']
+    Updated for Django REST framework 3.
+    """
 
-class SnacksSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = SnacksModel
-        fields = ['id','name', 'imageURL']
+    def to_internal_value(self, data):
+        
+
+        # Check if this is a base64 string
+        if isinstance(data, six.string_types):
+            # Check if the base64 string is in the "data:" format
+            if 'data:' in data and ';base64,' in data:
+                # Break out the header from the base64 content
+                header, data = data.split(';base64,')
+
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = base64.b64decode(data)
+            except TypeError:
+                self.fail('invalid_image')
+
+            # Generate file name:
+            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            # Get the file name extension:
+            file_extension = self.get_file_extension(file_name, decoded_file)
+
+            complete_file_name = "%s.%s" % (file_name, file_extension, )
+
+            data = ContentFile(decoded_file, name=complete_file_name)
+
+        return super(Base64ImageField, self).to_internal_value(data)
+
+    def get_file_extension(self, file_name, decoded_file):
+        import imghdr
+
+        extension = imghdr.what(file_name, decoded_file)
+        extension = "jpg" if extension == "jpeg" else extension
+
+        return extension
+
 
 
 
@@ -71,7 +103,16 @@ class SnacksSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ['id', 'username', 'email']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
