@@ -1,2 +1,2 @@
-# LivineSite
-Website of Livine
+# Livine API
+REST API of Livine
